@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, BarChart3, BookOpen, Plus } from 'lucide-react'
-import type { Stats } from '@/lib/queries/stats'
+import { BarChart3, BookOpen, Calendar, Plus } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Stats } from '@/lib/queries/stats';
 
 interface DashboardStatsProps {
-  stats: Stats
+  stats: Stats;
 }
 
 export function DashboardStats({ stats }: DashboardStatsProps) {
@@ -21,7 +21,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
           <p className="text-xs text-muted-foreground">期限切れカード数</p>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">今日のレビュー</CardTitle>
@@ -32,7 +32,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
           <p className="text-xs text-muted-foreground">完了したレビュー数</p>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">総デッキ数</CardTitle>
@@ -43,7 +43,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
           <p className="text-xs text-muted-foreground">作成したデッキ</p>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">総カード数</CardTitle>
@@ -55,5 +55,5 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

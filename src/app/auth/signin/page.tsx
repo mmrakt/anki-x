@@ -2,10 +2,10 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { signIn, signUp } from '@/lib/auth-client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { signIn, signUp } from '@/lib/auth-client';
 
 const authSchema = z.object({
   email: z.string().email('有効なメールアドレスを入力してください'),
@@ -38,7 +38,7 @@ export default function SignInPage() {
           email: data.email,
           password: data.password,
           name: data.email.split('@')[0],
-          callbackURL: '/'
+          callbackURL: '/',
         });
 
         if (result.error) {
@@ -50,7 +50,7 @@ export default function SignInPage() {
         const result = await signIn.email({
           email: data.email,
           password: data.password,
-          callbackURL: '/'
+          callbackURL: '/',
         });
 
         if (result.error) {
@@ -101,7 +101,9 @@ export default function SignInPage() {
               className="relative block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
               placeholder="パスワード"
             />
-            {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            )}
           </div>
 
           {error && <div className="text-red-600 text-sm text-center">{error}</div>}
@@ -112,17 +114,23 @@ export default function SignInPage() {
               disabled={isLoading}
               className="group relative flex w-full justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
             >
-              {isLoading ? `${isSignUp ? 'アカウント作成' : 'サインイン'}中...` : (isSignUp ? 'アカウント作成' : 'サインイン')}
+              {isLoading
+                ? `${isSignUp ? 'アカウント作成' : 'サインイン'}中...`
+                : isSignUp
+                  ? 'アカウント作成'
+                  : 'サインイン'}
             </button>
           </div>
-          
+
           <div className="text-center">
             <button
               type="button"
               onClick={() => setIsSignUp(!isSignUp)}
               className="text-indigo-600 hover:text-indigo-500 text-sm"
             >
-              {isSignUp ? 'すでにアカウントをお持ちですか？サインイン' : 'アカウントをお持ちでないですか？アカウント作成'}
+              {isSignUp
+                ? 'すでにアカウントをお持ちですか？サインイン'
+                : 'アカウントをお持ちでないですか？アカウント作成'}
             </button>
           </div>
         </form>

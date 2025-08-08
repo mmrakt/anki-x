@@ -1,10 +1,10 @@
-import { getAuthSession } from '@/lib/auth-helpers'
-import { prisma } from '@/lib/prisma'
+import { getAuthSession } from '@/lib/auth-helpers';
+import { prisma } from '@/lib/prisma';
 
 export async function getDecks() {
-  const session = await getAuthSession()
+  const session = await getAuthSession();
   if (!session?.user?.id) {
-    return []
+    return [];
   }
 
   try {
@@ -12,23 +12,22 @@ export async function getDecks() {
       where: { userId: session.user.id },
       include: {
         _count: {
-          select: { cards: true }
-        }
+          select: { cards: true },
+        },
       },
-      orderBy: { updatedAt: 'desc' }
-    })
+      orderBy: { updatedAt: 'desc' },
+    });
 
-    return decks
+    return decks;
   } catch (error) {
-    console.error('Failed to fetch decks:', error)
-    return []
+    console.error('Failed to fetch decks:', error);
   }
 }
 
 export async function getDeck(deckId: string) {
-  const session = await getAuthSession()
+  const session = await getAuthSession();
   if (!session?.user?.id) {
-    return null
+    return null;
   }
 
   try {
@@ -39,113 +38,107 @@ export async function getDeck(deckId: string) {
       },
       include: {
         cards: {
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
         },
         _count: {
-          select: { cards: true }
-        }
-      }
-    })
+          select: { cards: true },
+        },
+      },
+    });
 
-    return deck
+    return deck;
   } catch (error) {
-    console.error('Failed to fetch deck:', error)
-    return null
+    console.error('Failed to fetch deck:', error);
+    return null;
   }
 }
 
 export async function getStats() {
-  const session = await getAuthSession()
+  const session = await getAuthSession();
   if (!session?.user?.id) {
-    return null
+    return null;
   }
 
   try {
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    const [
-      totalDecks,
-      totalCards,
-      todayReviews,
-      weekReviews,
-      monthReviews,
-    ] = await Promise.all([
+    const [totalDecks, totalCards, todayReviews, weekReviews, monthReviews] = await Promise.all([
       prisma.deck.count({
-        where: { userId: session.user.id }
+        where: { userId: session.user.id },
       }),
-      
+
       prisma.card.count({
-        where: { 
-          deck: { userId: session.user.id }
-        }
+        where: {
+          deck: { userId: session.user.id },
+        },
       }),
-      
+
       prisma.review.count({
         where: {
           userId: session.user.id,
-          createdAt: { gte: today }
-        }
+          createdAt: { gte: today },
+        },
       }),
-      
+
       prisma.review.count({
         where: {
           userId: session.user.id,
-          createdAt: { gte: weekAgo }
-        }
+          createdAt: { gte: weekAgo },
+        },
       }),
-      
+
       prisma.review.count({
         where: {
           userId: session.user.id,
-          createdAt: { gte: monthAgo }
-        }
+          createdAt: { gte: monthAgo },
+        },
       }),
-    ])
+    ]);
 
     const dueCardsToday = await prisma.card.count({
       where: {
         deck: { userId: session.user.id },
-        dueAt: { lte: now }
-      }
-    })
+        dueAt: { lte: now },
+      },
+    });
 
     const reviewsByRating = await prisma.review.groupBy({
       by: ['rating'],
       where: {
         userId: session.user.id,
-        createdAt: { gte: weekAgo }
+        createdAt: { gte: weekAgo },
       },
       _count: {
-        rating: true
-      }
-    })
+        rating: true,
+      },
+    });
 
     const dailyReviews = await prisma.review.groupBy({
       by: ['createdAt'],
       where: {
         userId: session.user.id,
-        createdAt: { gte: weekAgo }
+        createdAt: { gte: weekAgo },
       },
       _count: {
-        id: true
-      }
-    })
+        id: true,
+      },
+    });
 
     const dailyStats = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000)
-      const dateStr = date.toISOString().split('T')[0]
+      const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+      const dateStr = date.toISOString().split('T')[0];
       const reviews = dailyReviews
         .filter((r: any) => r.createdAt.toISOString().split('T')[0] === dateStr)
-        .reduce((sum: number, r: any) => sum + r._count.id, 0)
+        .reduce((sum: number, r: any) => sum + r._count.id, 0);
 
       return {
         date: dateStr,
         reviews,
-      }
-    }).reverse()
+      };
+    }).reverse();
 
     return {
       basic: {
@@ -158,28 +151,28 @@ export async function getStats() {
       },
       reviewsByRating: reviewsByRating.reduce(
         (acc: Record<string, number>, item: any) => {
-          acc[item.rating] = item._count.rating
-          return acc
+          acc[item.rating] = item._count.rating;
+          return acc;
         },
         {} as Record<string, number>,
       ),
       dailyStats,
-    }
+    };
   } catch (error) {
-    console.error('Failed to fetch stats:', error)
-    return null
+    console.error('Failed to fetch stats:', error);
+    return null;
   }
 }
 
 export async function getStudySession(deckId: string) {
-  const session = await getAuthSession()
+  const session = await getAuthSession();
   if (!session?.user?.id) {
-    return null
+    return null;
   }
 
   try {
-    const now = new Date()
-    
+    const now = new Date();
+
     const cards = await prisma.card.findMany({
       where: {
         deck: {
@@ -187,15 +180,12 @@ export async function getStudySession(deckId: string) {
           userId: session.user.id,
         },
         dueAt: {
-          lte: now
-        }
+          lte: now,
+        },
       },
-      orderBy: [
-        { dueAt: 'asc' },
-        { createdAt: 'asc' }
-      ],
-      take: 20 // 一度に最大20枚まで
-    })
+      orderBy: [{ dueAt: 'asc' }, { createdAt: 'asc' }],
+      take: 20, // 一度に最大20枚まで
+    });
 
     const dueCount = await prisma.card.count({
       where: {
@@ -204,10 +194,10 @@ export async function getStudySession(deckId: string) {
           userId: session.user.id,
         },
         dueAt: {
-          lte: now
-        }
-      }
-    })
+          lte: now,
+        },
+      },
+    });
 
     const newCount = await prisma.card.count({
       where: {
@@ -215,18 +205,18 @@ export async function getStudySession(deckId: string) {
           id: deckId,
           userId: session.user.id,
         },
-        repetitions: 0
-      }
-    })
+        repetitions: 0,
+      },
+    });
 
     return {
       cards,
       dueCount,
       newCount,
-      totalCount: dueCount + newCount
-    }
+      totalCount: dueCount + newCount,
+    };
   } catch (error) {
-    console.error('Failed to fetch study session:', error)
-    return null
+    console.error('Failed to fetch study session:', error);
+    return null;
   }
 }
