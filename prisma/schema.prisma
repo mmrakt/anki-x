@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  accounts Account[]
+  sessions Session[]
+  decks    Deck[]
+  reviews  Review[]
+  
+  @@map("user")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  accountId         String
+  providerId        String
+  userId            String
+  accessToken       String?
+  refreshToken      String?
+  idToken           String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope             String?
+  password          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
+
+model Deck {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  cards Card[]
+  
+  @@map("decks")
+}
+
+model Card {
+  id        String   @id @default(cuid())
+  front     String
+  back      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // SM-2 Algorithm fields
+  dueAt       DateTime @default(now())
+  interval    Int      @default(0)  // days
+  repetitions Int      @default(0)
+  easeFactor  Float    @default(2.5)
+  
+  deckId String
+  deck   Deck   @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  
+  reviews Review[]
+  
+  @@map("cards")
+}
+
+model Review {
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  rating     Rating     // Again = 1, Hard = 2, Good = 3, Easy = 4
+  duration   Int?       // seconds spent reviewing
+  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  cardId String
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  
+  @@map("reviews")
+}
+
+enum Rating {
+  AGAIN // 1 - Complete failure
+  HARD  // 2 - Difficult, but correct
+  GOOD  // 3 - Normal response
+  EASY  // 4 - Easy response
+}

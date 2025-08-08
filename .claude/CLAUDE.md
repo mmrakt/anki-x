@@ -4,14 +4,7 @@
 
 ### File Structure
 
-- `app/`: Core application files following Next.js 13+ app router structure
-- `app/_components/`: Reusable UI components
-- `app/_contents/`: Static content (markdown files for blog posts, etc.)
-- `app/_lib/`: Utility functions and business logic
-- `app/globals.css`: Global styles using Tailwind CSS
-- `public/`: Static assets (images, icons, etc.)
-- `scripts/`: Build and development scripts
-- `.claude/`: Claude-specific configuration and commands
+// TBD
 
 ### Naming Conventions
 
@@ -19,7 +12,7 @@
 - **Components**: Use PascalCase for React components (e.g., `UserProfile`)
 - **Variables/Functions**: Use camelCase (e.g., `getUserData`)
 - **Constants**: Use UPPER_SNAKE_CASE (e.g., `API_BASE_URL`)
-- **Types/Interfaces**: Use PascalCase with descriptive names (e.g., `UserProfileData`)
+- **Types**: Use PascalCase with descriptive names (e.g., `UserProfileData`)
 
 ### Component Guidelines
 
@@ -28,7 +21,7 @@
 - Prefer function components with hooks over class components
 - Use `const` declarations for component definitions
 - Extract complex logic into custom hooks when appropriate
-- Props should be explicitly typed with interfaces
+- Props should be explicitly typed
 
 ### State Management
 
@@ -49,7 +42,7 @@
 
 - Enable strict mode in TypeScript configuration
 - Define explicit types for all function parameters and return values
-- Use interfaces for object shapes and types for unions/primitives
+- Use `type` instead of `interface`
 - Avoid `any` type; use `unknown` when necessary and narrow types appropriately
 - Leverage TypeScript's utility types (Pick, Omit, Partial, etc.) when appropriate
 
