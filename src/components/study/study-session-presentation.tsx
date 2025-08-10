@@ -142,7 +142,7 @@ export function StudySessionPresentation({ deckId, initialCards }: StudySessionP
         <Card className="w-full max-w-md">
           <CardContent className="p-6 text-center">
             <h2 className="text-xl font-semibold mb-4">復習セッション完了</h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               すべてのカードを復習しました！
             </p>
             <Button onClick={() => window.location.href = '/'}>
@@ -155,9 +155,9 @@ export function StudySessionPresentation({ deckId, initialCards }: StudySessionP
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* ヘッダー */}
-      <div className="bg-white shadow">
+      <div className="bg-card border-b">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-xl font-semibold">復習セッション</h1>
@@ -168,7 +168,7 @@ export function StudySessionPresentation({ deckId, initialCards }: StudySessionP
           </div>
           
           <div className="space-y-2">
-            <div className="flex justify-between text-sm text-gray-600">
+            <div className="flex justify-between text-sm text-muted-foreground">
               <span>{session.currentIndex + 1} / {session.totalCards}</span>
               {estimatedTime && <span>残り約 {estimatedTime} 分</span>}
             </div>
@@ -184,8 +184,8 @@ export function StudySessionPresentation({ deckId, initialCards }: StudySessionP
             <div className="text-center space-y-6">
               {/* 問題面 */}
               <div className="mb-8">
-                <h2 className="text-sm font-medium text-gray-500 mb-2">問題</h2>
-                <div className="text-2xl font-medium text-gray-900 leading-relaxed">
+                <h2 className="text-sm font-medium text-muted-foreground mb-2">問題</h2>
+                <div className="text-2xl font-medium text-foreground leading-relaxed">
                   {currentCard.front}
                 </div>
               </div>
@@ -193,8 +193,8 @@ export function StudySessionPresentation({ deckId, initialCards }: StudySessionP
               {/* 答え面 */}
               {showAnswer && (
                 <div className="mb-8 border-t pt-8">
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">答え</h3>
-                  <div className="text-xl text-gray-800 leading-relaxed">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">答え</h3>
+                  <div className="text-xl text-foreground leading-relaxed">
                     {currentCard.back}
                   </div>
                 </div>
@@ -257,7 +257,7 @@ export function StudySessionPresentation({ deckId, initialCards }: StudySessionP
 
               {/* カード情報 */}
               {showAnswer && (
-                <div className="text-xs text-gray-500 space-y-1 mt-8 pt-4 border-t">
+                <div className="text-xs text-muted-foreground space-y-1 mt-8 pt-4 border-t">
                   <div>間隔: {currentCard.interval}日</div>
                   <div>繰り返し: {currentCard.repetitions}回</div>
                   <div>難易度: {currentCard.easeFactor.toFixed(2)}</div>

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 export interface Deck {
   id: string
@@ -67,6 +67,26 @@ async function fetchStudySession(deckId: string): Promise<StudySession> {
   return response.json()
 }
 
+export interface CreateDeckData {
+  name: string
+  description?: string
+}
+
+async function createDeck(data: CreateDeckData): Promise<Deck> {
+  const response = await fetch('/api/decks', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.error || 'Failed to create deck')
+  }
+  return response.json()
+}
+
 export const deckKeys = {
   all: ['decks'] as const,
   lists: () => [...deckKeys.all, 'list'] as const,
@@ -102,5 +122,16 @@ export function useStudySession(deckId: string, initialData?: StudySession) {
     initialData,
     staleTime: 0, // 常に最新のデータを取得
     enabled: !!deckId,
+  })
+}
+
+export function useCreateDeck() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: createDeck,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: deckKeys.lists() })
+    },
   })
 }
